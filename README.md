@@ -16,3 +16,12 @@ Wymaga Android Studio (lub Android SDK) i JDK 17.
     ./gradlew :app:assembleDebug    # APK w app/build/outputs/apk/debug/
 
 Przykład: dla tabliczki Mitsubishi Electric aplikacja zwraca model `MSZ-EF25VE3W` i numer seryjny `7013350 T`.
+
+## Wersja internetowa
+Folder `web/` zawiera statyczną stronę (HTML + Tesseract.js, bez backendu) z tą samą logiką wyszukiwania
+modelu i numeru seryjnego. Zdjęcie jest przetwarzane w przeglądarce.
+
+    cd web && python3 -m http.server 8000   # http://localhost:8000
+
+Workflow `.github/workflows/pages.yml` publikuje stronę na GitHub Pages po zmianie w `web/` na gałęzi `main`
+(w ustawieniach repozytorium: Pages → Source: GitHub Actions). Można też wgrać folder `web/` na dowolny hosting statyczny.
