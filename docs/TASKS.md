@@ -77,8 +77,8 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] PartDetail (+ historia prób), ExportSheet, `ShareHelper`, FileProvider
 
 ## M12 — Wyniki prób i kalibracja
-- [ ] TestResult (werdykty, kwoty, pomiar, parser notatki, uczenie)
-- [ ] Calibration (eksport kuponu, 5 pomiarów)
+- [x] TestResult (werdykty, kwoty, pomiar, parser notatki, uczenie)
+- [x] Calibration (eksport kuponu, 5 pomiarów)
 
 ## M13 — Ścieżka zdjęcia
 - [ ] `ImageLoader`, `ExifReader`, `MarkerSheetPdf`, `OpenCvInit`

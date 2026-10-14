@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fitlab.app.ui.appViewModel
+import com.fitlab.app.ui.screens.calibration.CalibrationScreen
+import com.fitlab.app.ui.screens.calibration.CalibrationViewModel
 import com.fitlab.app.ui.screens.compensation.CompensationScreen
 import com.fitlab.app.ui.screens.compensation.CompensationViewModel
 import com.fitlab.app.ui.screens.home.HomeScreen
@@ -18,6 +20,8 @@ import com.fitlab.app.ui.screens.part.PartDetailViewModel
 import com.fitlab.app.ui.screens.part.PartRoute
 import com.fitlab.app.ui.screens.profiles.ProfilesViewModel
 import com.fitlab.app.ui.screens.templates.TemplateEditorScreen
+import com.fitlab.app.ui.screens.test.TestResultScreen
+import com.fitlab.app.ui.screens.test.TestResultViewModel
 import com.fitlab.app.ui.screens.templates.TemplateEditorViewModel
 import com.fitlab.app.ui.screens.templates.TemplatePickerScreen
 import com.fitlab.core.templates.TemplateId
@@ -79,6 +83,14 @@ fun FitLabNavHost() {
                 onOpenIteration = { id -> nav.navigate(Routes.test(id)) },
             )
         }
+        composable(
+            Routes.TEST,
+            arguments = listOf(navArgument("iterationId") { type = NavType.LongType }),
+        ) { entry ->
+            val id = entry.arguments?.getLong("iterationId") ?: -1L
+            TestResultScreen(appViewModel { TestResultViewModel(it, id) }, back)
+        }
+        composable(Routes.CALIBRATION) { CalibrationScreen(appViewModel { CalibrationViewModel(it) }, back) }
         composable(Routes.PROFILES) { ProfilesScreen(appViewModel { ProfilesViewModel(it) }, back) }
         composable(Routes.COMPENSATION) { CompensationScreen(appViewModel { CompensationViewModel(it) }, back) }
     }
