@@ -4,12 +4,12 @@
 Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dodatkowo `./gradlew :app:assembleDebug`.
 
 ## M0 — Szkielet projektu
-- [ ] Wrapper Gradle 9.6.1 (wygenerowany w pustym katalogu tymczasowym, skopiowany)
-- [ ] `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties` (root) wg DESIGN 2.6
-- [ ] `geometry/` (settings, build, `core`, `vision`) wg DESIGN 2.6
-- [ ] `VersionTest` (core) i test wersji OpenCV (vision)
-- [ ] `app/` minimalny: manifest bez uprawnień, `FitLabApp`, `MainActivity`, `strings.xml`, `themes.xml`
-- [ ] `.github/workflows/ci.yml`, dopiski do `.gitignore`, `docs/DECISIONS.md`
+- [x] Wrapper Gradle 9.6.1 (wygenerowany w pustym katalogu tymczasowym, skopiowany)
+- [x] `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties` (root) wg DESIGN 2.6
+- [x] `geometry/` (settings, build, `core`, `vision`) wg DESIGN 2.6
+- [x] `VersionTest` (core) i test wersji OpenCV (vision)
+- [x] `app/` minimalny: manifest bez uprawnień, `FitLabApp`, `MainActivity`, `strings.xml`, `themes.xml`
+- [x] `.github/workflows/ci.yml`, dopiski do `.gitignore`, `docs/DECISIONS.md`
 
 ## M1 — Geometria 2D (`core/geom`)
 - [ ] `Vec2`, `Vec3`, `Ring`, `Shape2`, `Bounds2`

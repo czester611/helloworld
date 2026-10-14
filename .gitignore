@@ -30,3 +30,11 @@ proguard/
 
 # Android Studio captures folder
 captures/
+
+# FitLab
+.idea/
+*.iml
+.kotlin/
+geometry/.gradle/
+geometry/build/
+.DS_Store
