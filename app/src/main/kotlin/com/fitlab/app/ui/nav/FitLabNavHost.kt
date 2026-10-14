@@ -15,6 +15,12 @@ import com.fitlab.app.ui.screens.home.HomeScreen
 import com.fitlab.app.ui.screens.home.HomeViewModel
 import com.fitlab.app.ui.screens.newpart.NewPartScreen
 import com.fitlab.app.ui.screens.profiles.ProfilesScreen
+import com.fitlab.app.ui.screens.markers.MarkerSheetScreen
+import com.fitlab.app.ui.screens.markers.MarkerSheetViewModel
+import com.fitlab.app.ui.screens.outline.OutlineEditorScreen
+import com.fitlab.app.ui.screens.outline.OutlineEditorViewModel
+import com.fitlab.app.ui.screens.photo.PhotoCaptureScreen
+import com.fitlab.app.ui.screens.photo.PhotoCaptureViewModel
 import com.fitlab.app.ui.screens.part.PartDetailScreen
 import com.fitlab.app.ui.screens.part.PartDetailViewModel
 import com.fitlab.app.ui.screens.part.PartRoute
@@ -91,6 +97,27 @@ fun FitLabNavHost() {
             TestResultScreen(appViewModel { TestResultViewModel(it, id) }, back)
         }
         composable(Routes.CALIBRATION) { CalibrationScreen(appViewModel { CalibrationViewModel(it) }, back) }
+        composable(Routes.MARKERS) { MarkerSheetScreen(appViewModel { MarkerSheetViewModel(it) }, back) }
+        composable(Routes.PHOTO) {
+            PhotoCaptureScreen(
+                viewModel = appViewModel { PhotoCaptureViewModel(it) },
+                onBack = back,
+                onCreated = { id ->
+                    nav.navigate(Routes.outline(id)) { popUpTo(Routes.PHOTO) { inclusive = true } }
+                },
+            )
+        }
+        composable(
+            Routes.OUTLINE,
+            arguments = listOf(navArgument("partId") { type = NavType.LongType }),
+        ) { entry ->
+            val partId = entry.arguments?.getLong("partId") ?: -1L
+            OutlineEditorScreen(
+                viewModel = appViewModel { OutlineEditorViewModel(it, partId) },
+                onBack = back,
+                onSaved = { id -> nav.navigate(Routes.part(id)) { popUpTo(Routes.HOME) } },
+            )
+        }
         composable(Routes.PROFILES) { ProfilesScreen(appViewModel { ProfilesViewModel(it) }, back) }
         composable(Routes.COMPENSATION) { CompensationScreen(appViewModel { CompensationViewModel(it) }, back) }
     }

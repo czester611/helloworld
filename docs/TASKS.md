@@ -81,10 +81,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Calibration (eksport kuponu, 5 pomiarów)
 
 ## M13 — Ścieżka zdjęcia
-- [ ] `ImageLoader`, `ExifReader`, `MarkerSheetPdf`, `OpenCvInit`
-- [ ] MarkerSheet (PDF, korekta skali)
-- [ ] PhotoCapture (aparat/galeria, grubość, pipeline, próg)
-- [ ] OutlineEditor (skala ref., obrót, lustro, otwory, kontury, fazki)
+- [x] `ImageLoader`, `ExifReader`, `MarkerSheetPdf`, `OpenCvInit`
+- [x] MarkerSheet (PDF, korekta skali)
+- [x] PhotoCapture (aparat/galeria, grubość, pipeline, próg)
+- [x] OutlineEditor (skala ref., obrót, lustro, otwory, kontury, fazki)
 
 ## M14 — Diagnostyka i porządki
 - [ ] Diagnostics + `assets/selftest_photo.jpg`
