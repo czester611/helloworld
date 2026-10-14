@@ -31,11 +31,11 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy 6.2 „export” (+ pliki w `build/test-output/`)
 
 ## M4 — Kompensacja (`core/fit`)
-- [ ] Enumy i `CompensationTable`, `ResolvedFeature`
-- [ ] `FitMath` (target, cad)
-- [ ] `FeedbackInterpreter`, `CompensationEstimator`, `MaterialDefaults`
-- [ ] `FeedbackNoteParser`
-- [ ] Testy 6.2 „fit / kompensacja” (wszystkie liczby)
+- [x] Enumy i `CompensationTable`, `ResolvedFeature`
+- [x] `FitMath` (target, cad)
+- [x] `FeedbackInterpreter`, `CompensationEstimator`, `MaterialDefaults`
+- [x] `FeedbackNoteParser`
+- [x] Testy 6.2 „fit / kompensacja” (wszystkie liczby)
 
 ## M5 — Projekty (`core/design`)
 - [ ] `PartDesign`, `OutlineDesign`, `HoleFeature`, `TemplateDesign`, `PrintSettings`, `BuildResult`
