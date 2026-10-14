@@ -87,5 +87,5 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] OutlineEditor (skala ref., obrót, lustro, otwory, kontury, fazki)
 
 ## M14 — Diagnostyka i porządki
-- [ ] Diagnostics + `assets/selftest_photo.jpg`
-- [ ] `docs/MANUAL_TEST.md`, aktualizacja `README.md`
+- [x] Diagnostics + `assets/selftest_photo.jpg`
+- [x] `docs/MANUAL_TEST.md`, aktualizacja `README.md`

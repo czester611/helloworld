@@ -152,7 +152,7 @@ private fun AddHoleDialog(at: Vec2, onConfirm: (Double) -> Unit, onDismiss: () -
                 MmField("Średnica", text, { text = it }, if (text.isNotEmpty() && (v == null || v <= 0)) "Podaj liczbę > 0" else null)
             }
         },
-        confirmButton = { TextButton(enabled = v != null && v > 0, onClick = { onConfirm(v ?: return@TextButton) }) { Text("Dodaj") } },
+        confirmButton = { TextButton(enabled = v != null && v > 0, onClick = { v?.let(onConfirm) }) { Text("Dodaj") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } },
     )
 }

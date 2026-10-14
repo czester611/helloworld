@@ -15,6 +15,8 @@ import com.fitlab.app.ui.screens.home.HomeScreen
 import com.fitlab.app.ui.screens.home.HomeViewModel
 import com.fitlab.app.ui.screens.newpart.NewPartScreen
 import com.fitlab.app.ui.screens.profiles.ProfilesScreen
+import com.fitlab.app.ui.screens.diagnostics.DiagnosticsScreen
+import com.fitlab.app.ui.screens.diagnostics.DiagnosticsViewModel
 import com.fitlab.app.ui.screens.markers.MarkerSheetScreen
 import com.fitlab.app.ui.screens.markers.MarkerSheetViewModel
 import com.fitlab.app.ui.screens.outline.OutlineEditorScreen
@@ -118,6 +120,7 @@ fun FitLabNavHost() {
                 onSaved = { id -> nav.navigate(Routes.part(id)) { popUpTo(Routes.HOME) } },
             )
         }
+        composable(Routes.DIAGNOSTICS) { DiagnosticsScreen(appViewModel { DiagnosticsViewModel(it) }, back) }
         composable(Routes.PROFILES) { ProfilesScreen(appViewModel { ProfilesViewModel(it) }, back) }
         composable(Routes.COMPENSATION) { CompensationScreen(appViewModel { CompensationViewModel(it) }, back) }
     }
