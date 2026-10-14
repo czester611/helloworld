@@ -38,10 +38,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy 6.2 „fit / kompensacja” (wszystkie liczby)
 
 ## M5 — Projekty (`core/design`)
-- [ ] `PartDesign`, `OutlineDesign`, `HoleFeature`, `TemplateDesign`, `PrintSettings`, `BuildResult`
-- [ ] `OutlineBuilder` (warstwy, fazki schodkowe, stopa słonia, walidacja, plaster)
-- [ ] `ElephantFoot`, `CalibrationCoupon`, `DesignBuilder`, `DesignJson`
-- [ ] Testy 6.2 „design”
+- [x] `PartDesign`, `OutlineDesign`, `HoleFeature`, `TemplateDesign`, `PrintSettings`, `BuildResult`
+- [x] `OutlineBuilder` (warstwy, fazki schodkowe, stopa słonia, walidacja, plaster)
+- [x] `ElephantFoot`, `CalibrationCoupon`, `DesignBuilder`, `DesignJson`
+- [x] Testy 6.2 „design”
 
 ## M6 — Szablony (`core/templates`)
 - [ ] `ParamSpec` & co., `PartTemplate`, `TemplateRegistry`
