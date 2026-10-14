@@ -68,9 +68,9 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] `AppContainer`, `FitLabApp` (OpenCV init, seed)
 
 ## M10 — Szkielet UI
-- [ ] Theme, `Routes`, `FitLabNavHost`
-- [ ] Komponenty: `ShapeCanvas`, `MmField`, `FitClassSelector`, `VerdictSelector`, `ErrorBanner`, `ConfirmDialog`
-- [ ] Ekrany: Home, NewPart, Profiles, Compensation
+- [x] Theme, `Routes`, `FitLabNavHost`
+- [x] Komponenty: `ShapeCanvas`, `MmField`, `FitClassSelector`, `VerdictSelector`, `ErrorBanner`, `ConfirmDialog`
+- [x] Ekrany: Home, NewPart, Profiles, Compensation
 
 ## M11 — Szablony w UI i eksport
 - [ ] TemplatePicker, TemplateEditor (walidacja, podgląd, tabela cech)

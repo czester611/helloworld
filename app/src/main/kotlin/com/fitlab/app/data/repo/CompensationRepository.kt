@@ -65,6 +65,13 @@ class CompensationRepository(private val db: FitLabDatabase) {
         )
     }
 
+    /** Wyłącza ręczne nadpisanie i przelicza wartość z próbek (bez kasowania ustawionej wartości, gdy brak próbek). */
+    suspend fun releaseManual(printerId: Long, filamentId: Long, kind: CompensationKind): BiasChange {
+        val rule = rules.get(printerId, filamentId, kind.name)
+        if (rule != null) rules.upsert(rule.copy(manualOverride = false, updatedAt = System.currentTimeMillis()))
+        return recompute(printerId, filamentId, kind)
+    }
+
     /** Usuwa nadpisanie, ustawia prior i przelicza z próbek. */
     suspend fun resetToDefault(printerId: Long, filamentId: Long, kind: CompensationKind): BiasChange {
         val old = rules.get(printerId, filamentId, kind.name)?.biasMm ?: prior(filamentId, kind)
