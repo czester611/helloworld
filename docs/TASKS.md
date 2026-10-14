@@ -12,11 +12,11 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] `.github/workflows/ci.yml`, dopiski do `.gitignore`, `docs/DECISIONS.md`
 
 ## M1 — Geometria 2D (`core/geom`)
-- [ ] `Vec2`, `Vec3`, `Ring`, `Shape2`, `Bounds2`
-- [ ] `Shapes` (circle, rect, roundedSquare, dShape)
-- [ ] `GeometryOps` (most JTS, offset, boolean, simplify, isValid), `GeometryException`
-- [ ] `CircleFit.kasa`
-- [ ] Testy z DESIGN 6.2 „geom”
+- [x] `Vec2`, `Vec3`, `Ring`, `Shape2`, `Bounds2`
+- [x] `Shapes` (circle, rect, roundedSquare, dShape)
+- [x] `GeometryOps` (most JTS, offset, boolean, simplify, isValid), `GeometryException`
+- [x] `CircleFit.kasa`
+- [x] Testy z DESIGN 6.2 „geom”
 
 ## M2 — Siatka (`core/mesh`)
 - [ ] `Transform3`, `Prism`, `Solid.footprint`, `Mesh`, `Tri`
