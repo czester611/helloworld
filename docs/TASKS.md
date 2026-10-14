@@ -25,10 +25,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy 6.2 „mesh”
 
 ## M3 — Eksport (`core/export`)
-- [ ] `StlWriter` (binarny, LE, nagłówek bez „solid”)
-- [ ] `ThreeMfWriter` (3 wpisy ZIP, obiekty + kompozyt, Locale.ROOT)
-- [ ] `PartExporter`, `FileNames`
-- [ ] Testy 6.2 „export” (+ pliki w `build/test-output/`)
+- [x] `StlWriter` (binarny, LE, nagłówek bez „solid”)
+- [x] `ThreeMfWriter` (3 wpisy ZIP, obiekty + kompozyt, Locale.ROOT)
+- [x] `PartExporter`, `FileNames`
+- [x] Testy 6.2 „export” (+ pliki w `build/test-output/`)
 
 ## M4 — Kompensacja (`core/fit`)
 - [ ] Enumy i `CompensationTable`, `ResolvedFeature`
