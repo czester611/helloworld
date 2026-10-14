@@ -44,10 +44,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy 6.2 „design”
 
 ## M6 — Szablony (`core/templates`)
-- [ ] `ParamSpec` & co., `PartTemplate`, `TemplateRegistry`
-- [ ] `BushingTemplate`, `KnobTemplate`, `CapTemplate`, `BracketTemplate`
-- [ ] `Involute`, `SpurGearTemplate`
-- [ ] Testy 6.2 „templates”
+- [x] `ParamSpec` & co., `PartTemplate`, `TemplateRegistry`
+- [x] `BushingTemplate`, `KnobTemplate`, `CapTemplate`, `BracketTemplate`
+- [x] `Involute`, `SpurGearTemplate`
+- [x] Testy 6.2 „templates”
 
 ## M7 — Post-processing zdjęcia (`core/sheet`, `core/photo`)
 - [ ] `MarkerSheetSpec`
