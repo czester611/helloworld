@@ -46,7 +46,18 @@ class ProfileRepository(private val db: FitLabDatabase, private val settings: Ap
         db.withTransaction {
             val now = System.currentTimeMillis()
             if (dao.countPrinters() == 0) {
-                dao.insertPrinter(PrinterProfileEntity(name = "Moja drukarka", createdAt = now))
+                dao.insertPrinter(
+                    PrinterProfileEntity(
+                        name = DEFAULT_PRINTER_NAME,
+                        nozzleDiameterMm = 0.4,
+                        layerHeightMm = 0.2,
+                        // Stopa słonia 0,2 mm jak w DESIGN.md (wartość domyślna profilu).
+                        elephantFootMm = 0.2,
+                        notes = "Wbudowany profil. Pole druku ok. $DEFAULT_BUILD_VOLUME_MM mm " +
+                            "(z pamięci użytkownika — do weryfikacji).",
+                        createdAt = now,
+                    ),
+                )
             }
             if (dao.countFilaments() == 0) {
                 dao.insertFilament(FilamentProfileEntity(name = "PLA (domyślny)", material = "PLA", createdAt = now))
@@ -73,6 +84,14 @@ class ProfileRepository(private val db: FitLabDatabase, private val settings: Ap
                 settings.setActiveFilament(pla.id)
             }
         }
+    }
+
+    companion object {
+        /** Wbudowany domyślny profil drukarki użytkownika (Snapmaker U1, FDM, toolchanger, dysza 0,4 mm). */
+        const val DEFAULT_PRINTER_NAME = "Snapmaker U1"
+
+        /** Pole druku Snapmaker U1 (mm). DO WERYFIKACJI PRZEZ UŻYTKOWNIKA — wartość z pamięci, nieużywana w obliczeniach. */
+        const val DEFAULT_BUILD_VOLUME_MM = "270×270×270"
     }
 
     private fun materialOf(f: FilamentProfileEntity): Material =

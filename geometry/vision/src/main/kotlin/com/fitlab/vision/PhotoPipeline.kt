@@ -31,6 +31,8 @@ data class PipelineResult(
     val pose: CameraPose?,
     val warnings: List<String>,
     val meanReprojErrorPx: Double,
+    /** Surowe kontury w pikselach obrazu zrektyfikowanego (do nakładki w UI). */
+    val raw: RawContours,
 )
 
 /** Pełny pipeline: zdjęcie -> markery -> rektyfikacja -> segmentacja -> obrys w mm. */
@@ -79,9 +81,10 @@ object PhotoPipeline {
     ): PipelineResult {
         val seg = Segmenter.segment(rectified, params)
         try {
-            val outline = OutlinePostProcessor.process(RawContours(seg.outerPx, seg.holesPx), thicknessMm, pose)
+            val raw = RawContours(seg.outerPx, seg.holesPx)
+            val outline = OutlinePostProcessor.process(raw, thicknessMm, pose)
             val warnings = baseWarnings + seg.warnings + outline.warnings
-            return PipelineResult(outline, rectified, seg.mask, seg.threshold, pose, warnings, meanReprojErrorPx)
+            return PipelineResult(outline, rectified, seg.mask, seg.threshold, pose, warnings, meanReprojErrorPx, raw)
         } catch (e: Throwable) {
             seg.mask.release()
             throw e

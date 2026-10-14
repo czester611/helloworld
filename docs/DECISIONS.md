@@ -9,3 +9,6 @@ Format: data, krok, decyzja, powód.
 - `CameraPoseEstimator.estimate(markers, sheet, w, h, focal35mm)` zwraca `CameraPose?`; ostrzeżenie o braku pozy dodaje `PhotoPipeline`.
 - Test syntetyczny: wykryty otwór ma Ø 8,15 mm (nie 8,00) — wynika z rysowania okręgu `Imgproc.circle` (promień 40 px
   zamalowuje piksele do ~40,5 px), a nie z błędu znaku korekcji półpiksela (obrys zewnętrzny wychodzi dokładnie 40,00 × 25,00 mm).
+
+## 2026-10-14 · M9 · Domyślna drukarka
+- Zamiast "Moja drukarka" seed to "Snapmaker U1" (na życzenie użytkownika); patrz `docs/IMPLEMENTATION_NOTES.md`.

@@ -15,6 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 
 /** Ręczne DI: jedna instancja zależności na proces. */
 class AppContainer(context: Context) {
+    val appContext: Context = context.applicationContext
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val settings = AppSettings(context)
     val fileStore = FileStore(context)
