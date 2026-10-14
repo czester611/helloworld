@@ -19,10 +19,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy z DESIGN 6.2 „geom”
 
 ## M2 — Siatka (`core/mesh`)
-- [ ] `Transform3`, `Prism`, `Solid.footprint`, `Mesh`, `Tri`
-- [ ] `MeshBuilder.buildShells` / `build` (ściany, pokrywy CDT, transformacja, wyznacznik)
-- [ ] `MeshValidator` (szczelność, orientacja, objętość)
-- [ ] Testy 6.2 „mesh”
+- [x] `Transform3`, `Prism`, `Solid.footprint`, `Mesh`, `Tri`
+- [x] `MeshBuilder.buildShells` / `build` (ściany, pokrywy CDT, transformacja, wyznacznik)
+- [x] `MeshValidator` (szczelność, orientacja, objętość)
+- [x] Testy 6.2 „mesh”
 
 ## M3 — Eksport (`core/export`)
 - [ ] `StlWriter` (binarny, LE, nagłówek bez „solid”)
