@@ -56,10 +56,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy 6.2 „photo (core)”
 
 ## M8 — Vision (`geometry/vision`)
-- [ ] `MatUtils`, `MarkerDetector`, `SheetRectifier`, `Segmenter`, `CameraPoseEstimator`
-- [ ] `PhotoPipeline` (+ `PipelineInput`, `PipelineResult`, `PipelineException`)
-- [ ] `MarkerSheetRenderer`
-- [ ] `SyntheticPhotoFactory` + testy 6.2 „vision”, zapis `build/selftest_photo.jpg`
+- [x] `MatUtils`, `MarkerDetector`, `SheetRectifier`, `Segmenter`, `CameraPoseEstimator`
+- [x] `PhotoPipeline` (+ `PipelineInput`, `PipelineResult`, `PipelineException`)
+- [x] `MarkerSheetRenderer`
+- [x] `SyntheticPhotoFactory` + testy 6.2 „vision”, zapis `build/selftest_photo.jpg`
 
 ## M9 — Dane aplikacji
 - [ ] Encje i DAO (7 tabel), `FitLabDatabase` v1, schemat w `app/schemas/`
