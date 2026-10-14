@@ -50,10 +50,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Testy 6.2 „templates”
 
 ## M7 — Post-processing zdjęcia (`core/sheet`, `core/photo`)
-- [ ] `MarkerSheetSpec`
-- [ ] `PixelMapping`, `CameraPose`, `ThicknessCorrection`
-- [ ] `RawContours`, `PhotoOutline`, `HoleCandidate`, `OutlinePostProcessor`
-- [ ] Testy 6.2 „photo (core)”
+- [x] `MarkerSheetSpec`
+- [x] `PixelMapping`, `CameraPose`, `ThicknessCorrection`
+- [x] `RawContours`, `PhotoOutline`, `HoleCandidate`, `OutlinePostProcessor`
+- [x] Testy 6.2 „photo (core)”
 
 ## M8 — Vision (`geometry/vision`)
 - [ ] `MatUtils`, `MarkerDetector`, `SheetRectifier`, `Segmenter`, `CameraPoseEstimator`
