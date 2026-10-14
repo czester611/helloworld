@@ -62,10 +62,10 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] `SyntheticPhotoFactory` + testy 6.2 „vision”, zapis `build/selftest_photo.jpg`
 
 ## M9 — Dane aplikacji
-- [ ] Encje i DAO (7 tabel), `FitLabDatabase` v1, schemat w `app/schemas/`
-- [ ] `AppSettings`, `FileStore`
-- [ ] Repozytoria (Profile z `ensureDefaults`, Compensation, Part, Test)
-- [ ] `AppContainer`, `FitLabApp` (OpenCV init, seed)
+- [x] Encje i DAO (7 tabel), `FitLabDatabase` v1 (schemat w `app/schemas/` zostanie wygenerowany przy pierwszym buildzie z Android SDK)
+- [x] `AppSettings`, `FileStore`
+- [x] Repozytoria (Profile z `ensureDefaults`, Compensation, Part, Test)
+- [x] `AppContainer`, `FitLabApp` (OpenCV init, seed)
 
 ## M10 — Szkielet UI
 - [ ] Theme, `Routes`, `FitLabNavHost`
