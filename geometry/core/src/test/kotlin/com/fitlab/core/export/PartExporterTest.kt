@@ -28,4 +28,12 @@ class PartExporterTest {
         PartExporter.export(s, ExportFormat.THREE_MF, "x", mf)
         assertTrue(mf.size() > 0)
     }
+
+    @Test
+    fun dimensionsOfCube() {
+        val d = PartExporter.dimensions(ExportTestSupport.cube())
+        assertClose(10.0, d.x, 1e-9)
+        assertClose(10.0, d.y, 1e-9)
+        assertClose(5.0, d.z, 1e-9)
+    }
 }

@@ -27,6 +27,16 @@ object PartExporter {
         return shells.map { it.translated(d) }
     }
 
+    /** Wymiary eksportowanej bryły (X, Y, Z w mm) po normalizacji. */
+    fun dimensions(solid: Solid): Vec3 {
+        val all = preparedShells(solid).map { it.bounds() }
+        return Vec3(
+            all.maxOf { it.second.x } - all.minOf { it.first.x },
+            all.maxOf { it.second.y } - all.minOf { it.first.y },
+            all.maxOf { it.second.z } - all.minOf { it.first.z },
+        )
+    }
+
     /** Waliduje siatkę bez zapisu. */
     fun validate(solid: Solid): MeshReport =
         MeshValidator.check(preparedShells(solid).fold(Mesh.EMPTY) { acc, m -> acc + m })

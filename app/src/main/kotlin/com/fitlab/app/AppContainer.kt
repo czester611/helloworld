@@ -3,6 +3,7 @@ package com.fitlab.app
 import android.content.Context
 import com.fitlab.app.data.db.FitLabDatabase
 import com.fitlab.app.data.files.FileStore
+import com.fitlab.app.data.repo.BuildContext
 import com.fitlab.app.data.repo.CompensationRepository
 import com.fitlab.app.data.repo.PartRepository
 import com.fitlab.app.data.repo.ProfileRepository
@@ -22,4 +23,11 @@ class AppContainer(context: Context) {
     val compensation = CompensationRepository(database)
     val parts = PartRepository(database, fileStore)
     val tests = TestRepository(database, compensation)
+
+    /** Kontekst budowy dla aktywnej pary drukarka + filament. */
+    suspend fun buildContext(): BuildContext {
+        val printer = requireNotNull(profiles.activePrinter()) { "Brak profilu drukarki" }
+        val filament = requireNotNull(profiles.activeFilament()) { "Brak profilu filamentu" }
+        return BuildContext(printer, filament, compensation.tableFor(printer.id, filament.id))
+    }
 }

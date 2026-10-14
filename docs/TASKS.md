@@ -73,8 +73,8 @@ Kryterium bazowe każdego kroku: `./gradlew -p geometry test` zielone; od M9 dod
 - [x] Ekrany: Home, NewPart, Profiles, Compensation
 
 ## M11 — Szablony w UI i eksport
-- [ ] TemplatePicker, TemplateEditor (walidacja, podgląd, tabela cech)
-- [ ] PartDetail (+ historia prób), ExportSheet, `ShareHelper`, FileProvider
+- [x] TemplatePicker, TemplateEditor (walidacja, podgląd, tabela cech)
+- [x] PartDetail (+ historia prób), ExportSheet, `ShareHelper`, FileProvider
 
 ## M12 — Wyniki prób i kalibracja
 - [ ] TestResult (werdykty, kwoty, pomiar, parser notatki, uczenie)

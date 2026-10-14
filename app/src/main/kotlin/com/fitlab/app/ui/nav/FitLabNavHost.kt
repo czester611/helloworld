@@ -1,6 +1,8 @@
 package com.fitlab.app.ui.nav
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,7 +13,14 @@ import com.fitlab.app.ui.screens.home.HomeScreen
 import com.fitlab.app.ui.screens.home.HomeViewModel
 import com.fitlab.app.ui.screens.newpart.NewPartScreen
 import com.fitlab.app.ui.screens.profiles.ProfilesScreen
+import com.fitlab.app.ui.screens.part.PartDetailScreen
+import com.fitlab.app.ui.screens.part.PartDetailViewModel
+import com.fitlab.app.ui.screens.part.PartRoute
 import com.fitlab.app.ui.screens.profiles.ProfilesViewModel
+import com.fitlab.app.ui.screens.templates.TemplateEditorScreen
+import com.fitlab.app.ui.screens.templates.TemplateEditorViewModel
+import com.fitlab.app.ui.screens.templates.TemplatePickerScreen
+import com.fitlab.core.templates.TemplateId
 
 /** Graf nawigacji aplikacji (trasy tekstowe). */
 @Composable
@@ -28,6 +37,46 @@ fun FitLabNavHost() {
                 onPhoto = { nav.navigate(Routes.PHOTO) },
                 onTemplates = { nav.navigate(Routes.TEMPLATES) },
                 onMarkers = { nav.navigate(Routes.MARKERS) },
+            )
+        }
+        composable(Routes.TEMPLATES) {
+            TemplatePickerScreen(onBack = back, onSelect = { id -> nav.navigate(Routes.templateEditor(id)) })
+        }
+        composable(
+            Routes.TEMPLATE_EDITOR,
+            arguments = listOf(
+                navArgument("templateId") { type = NavType.StringType },
+                navArgument("partId") { type = NavType.LongType; defaultValue = -1L },
+            ),
+        ) { entry ->
+            val templateId = TemplateId.valueOf(entry.arguments?.getString("templateId") ?: TemplateId.BUSHING.name)
+            val partId = entry.arguments?.getLong("partId") ?: -1L
+            TemplateEditorScreen(
+                viewModel = appViewModel { TemplateEditorViewModel(it, templateId, partId) },
+                onBack = back,
+                onSaved = { id ->
+                    nav.navigate(Routes.part(id)) {
+                        popUpTo(Routes.HOME)
+                    }
+                },
+            )
+        }
+        composable(
+            Routes.PART,
+            arguments = listOf(navArgument("partId") { type = NavType.LongType }),
+        ) { entry ->
+            val partId = entry.arguments?.getLong("partId") ?: -1L
+            PartDetailScreen(
+                viewModel = appViewModel { PartDetailViewModel(it, partId) },
+                onBack = back,
+                onEdit = { target ->
+                    when (target) {
+                        is PartRoute.Outline -> nav.navigate(Routes.outline(target.partId))
+                        is PartRoute.Template ->
+                            nav.navigate(Routes.templateEditor(TemplateId.valueOf(target.templateId), target.partId))
+                    }
+                },
+                onOpenIteration = { id -> nav.navigate(Routes.test(id)) },
             )
         }
         composable(Routes.PROFILES) { ProfilesScreen(appViewModel { ProfilesViewModel(it) }, back) }
