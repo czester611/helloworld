@@ -19,3 +19,16 @@ Szczegółowe decyzje i odstępstwa: `docs/DECISIONS.md` (zgodnie z DESIGN.md). 
 - NewPart i TemplatePicker nie mają ViewModeli (statyczne ekrany).
 - Pole „Bias” w Kompensacji używa zwykłej klawiatury (klawiatura dziesiętna nie zawsze ma minus).
 - Eksport: próba (TestIteration) zapisywana jest w momencie wygenerowania pliku (także przy późniejszym anulowaniu wyboru lokalizacji).
+
+## Zalecenia filamentu i orientacji (zadanie A)
+- Logika w czystym Kotlinie: `geometry/core/.../advice/UsageAdvice.kt` (`UsageType`, `UsageAdvisor.advise`, `matchProfile`) z testami
+  `UsageAdvisorTest`. Mapowanie: PLA (wnętrze, prototyp, estetyczne), PETG (pasowane, ruchome, obciążone), ASA (ciepło/słońce,
+  zewnątrz; PETG jako alternatywa), TPU (uszczelka/amortyzator), nylon/PA jako alternatywa dla ruchomych i obciążonych.
+- `Material` nie ma wartości nylon (nie zmieniano enuma ani serializacji): nylon to opcja z `Material.OTHER` i `nameHint`;
+  profil dopasowywany po nazwie (zawiera „nylon” lub „PA”, materiał OTHER).
+- UI: karta „Zalecenia” (`AdviceCard`) na ekranie szczegółów części. Wybór typu zastosowania ustawia jako aktywny pasujący
+  profil filamentu głównej rekomendacji (jeśli istnieje); alternatywy mają przycisk „Użyj profilu”. Uczenie kompensacji per
+  filament bez zmian. Brak pasującego profilu: komunikat zamiast zmiany.
+- Ostrzeżenie o częściach krytycznych dla bezpieczeństwa i uwaga „sprawdź w instrukcji drukarki” (komora, limit dyszy Snapmaker U1)
+  są stałymi elementami każdej rekomendacji; aplikacja niczego nie zakłada o tych parametrach.
+- Karta nie została jeszcze dodana do arkusza eksportu; jest tylko na szczegółach części.

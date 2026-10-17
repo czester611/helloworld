@@ -63,6 +63,7 @@ fun PartDetailScreen(
     var exportType by remember { mutableStateOf<IterationType?>(null) }
     var renaming by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf(false) }
+    val filaments by viewModel.filaments.collectAsStateWithLifecycle()
     val part = state.part
     var notes by remember(part?.id) { mutableStateOf<String?>(null) }
 
@@ -118,6 +119,11 @@ fun PartDetailScreen(
                     }
                 }
             }
+            AdviceCard(
+                filaments = filaments,
+                activeFilamentName = state.filamentName,
+                onUseFilament = viewModel::useFilament,
+            )
             FeatureTable(state.features, showBias = false)
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

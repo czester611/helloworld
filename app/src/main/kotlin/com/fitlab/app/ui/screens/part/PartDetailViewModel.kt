@@ -3,6 +3,7 @@ package com.fitlab.app.ui.screens.part
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fitlab.app.AppContainer
+import com.fitlab.app.data.db.FilamentProfileEntity
 import com.fitlab.app.data.db.PartEntity
 import com.fitlab.app.platform.ExportPlan
 import com.fitlab.app.ui.components.label
@@ -84,6 +85,14 @@ class PartDetailViewModel(private val c: AppContainer, private val partId: Long)
             },
         )
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PartDetailUiState())
+
+    val filaments: StateFlow<List<FilamentProfileEntity>> = c.profiles.observeFilaments()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Ustawia aktywny filament (kompensacja uczona per filament zostaje bez zmian). */
+    fun useFilament(id: Long) {
+        c.settings.setActiveFilament(id)
+    }
 
     private suspend fun summaryOf(iterationId: Long, recorded: Boolean): String {
         if (!recorded) return "wynik: brak"
