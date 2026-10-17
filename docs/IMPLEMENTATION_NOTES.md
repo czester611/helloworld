@@ -32,3 +32,36 @@ Szczegółowe decyzje i odstępstwa: `docs/DECISIONS.md` (zgodnie z DESIGN.md). 
 - Ostrzeżenie o częściach krytycznych dla bezpieczeństwa i uwaga „sprawdź w instrukcji drukarki” (komora, limit dyszy Snapmaker U1)
   są stałymi elementami każdej rekomendacji; aplikacja niczego nie zakłada o tych parametrach.
 - Karta nie została jeszcze dodana do arkusza eksportu; jest tylko na szczegółach części.
+
+## Obudowa (enclosure)
+- Logika: `core/enclosure` (`EnclosureSpec`, `EnclosureBuilder`, `EnclosureResult`); serializacja przez `EnclosureDesign`
+  (podtyp `PartDesign`, `"type":"enclosure"`, w pakiecie `design` — wymóg sealed). Część w bazie: `source = ENCLOSURE`,
+  próby jako `FULL_PART` / `FIT_TEST` (plasterek) — istniejące `ExportService.commit` (próba dopiero po udanym zapisie).
+- Zdjęcie daje tylko obrys; wysokość obiektu, wystające elementy i położenie portów podaje użytkownik (komunikat w UI:
+  `EnclosureBuilder.MANUAL_INPUT_NOTE`). Ścieżka ze zdjęcia: `photo?enclosure=true` → edytor obrysu → ekran Obudowa;
+  część ze zdjęcia jest zamieniana w obudowę (`PartRepository.convertToEnclosure`, zdjęcie zostaje). Tryb „wg wymiarów”: prostokąt.
+- Kompensacja bez nowego typu cechy: wnęka = obrys + luz (domyślnie 0,5 mm/stronę) jako SLOT (offset −bias/2); wymiary zewnętrzne
+  i zakładka jako OUTLINE; otwory pod wkręty i wycięcia okrągłe jako HOLE, wycięcia prostokątne jako SLOT. Zakładka pokrywy:
+  cel = wnęka − luz klasy pasowania (domyślnie SLIDE 0,15 mm średnicowo), pierścień 1,2 mm, wysokość 2 mm.
+- Obrys zewnętrzny: wnęka → offset (ścianka − R, MITRE) → offset +R (ROUND), więc ostre rogi są zaokrąglone promieniem R (2 mm).
+- Ścianki z wycięciami: warstwy `Prism` dzielone na przedziały z (podłoga, początek/koniec wycięć, wysokość podpórek, szczyt);
+  w każdym przedziale od pierścienia ścianki odejmowany jest przekrój wycięcia (prostokąt; okrąg jako stos cięciw co wysokość warstwy),
+  potem suma ze słupkami/podpórkami i odjęcie otworów. Położenie wycięcia wyznacza promień od krawędzi do wnęki (działa też dla
+  obrysów nieprostokątnych i krawędzi wg indeksu). Pozycja = ŚRODEK wycięcia od początku krawędzi (N/S od zachodu, E/W od południa),
+  wysokość środka od górnej powierzchni podłogi (przy podpórkach dodaj ich wysokość).
+- Tryb śrub: 4 słupki w narożnikach prostokąta otaczającego wnękę (Ø = otwór + 2×2 mm, otwór 2,5 mm). Słupek kolidujący z obiektem
+  (dla prostokątnego obiektu — zawsze, bo wnęka ma ostre rogi) jest domyślnie wyprowadzany na zewnątrz ścianki jako „ucho”
+  (odstępstwo od „pomiń słupek”; przełącznik `screwEars = false` przywraca pomijanie z ostrzeżeniem). Pokrywa: otwór przelotowy
+  = Ø wkręta + klasa LOOSE (3,4 mm dla M3) i zagłębienie na łeb (1,9·Ø+0,4, głębokość = grubość pokrywy − 0,8, max 2 mm) od strony stołu.
+- Pokrywa jest budowana od razu w pozycji do druku (płaska zewnętrzna strona na z=0, zakładka do góry; lustro względem osi X
+  odpowiada obrotowi o 180°). Dno i pokrywa leżą obok siebie z odstępem 10 mm. Brak podpór poza mostem nad zagłębieniem na łeb.
+- Eksport: 3MF z dwoma obiektami (`PartExporter.exportGroups3mf`, `ThreeMfWriter.writeParts`) albo dwa pliki STL
+  (`FileNames.exportName("<nazwa> base|lid", ...)`; „Udostępnij” = ACTION_SEND_MULTIPLE, „Zapisz plik…” = dwa kolejne okna zapisu).
+- Plasterek pasowania (`EnclosureBuilder.buildFitTest`): narożnik 25×25 mm dna (podłoga + ścianka do wys. zakładki + 1 mm) i pokrywy
+  z zakładką (albo słupkiem i otworem), bez wycięć, szczelin i podpórek; wchodzi przez `DesignBuilder.buildFitTest`.
+- Ostrzeżenia: pole druku (270×270×270 mm, wartość NIEZWERYFIKOWANA, `MachineLimits`), obrys < 10 mm, ścianka nie będąca
+  wielokrotnością dyszy, zakładka wyższa niż zapas nad obiektem, wycięcia poza krawędzią/ścianką/strefą zakładki, siatka (`MeshValidator`).
+- Zalecenia materiału: `UsageAdvisor.forEnclosure(outdoor)` — wnętrze: PLA (alt. PETG), zewnątrz: ASA (alt. PETG) + wskazówka orientacji.
+- Zweryfikowane: `./gradlew -p geometry test` (liczby: wnęka 51×31, zewn. 55×35, wysokości 18,6 / 3,6, objętości, zakładka w ściance,
+  objętość usunięta przez wycięcia, słupki, szczeliny, podpórki, siatki zamknięte bez zdegenerowanych trójkątów). Ekrany Compose
+  weryfikuje tylko CI (`assembleDebug`); nie sprawdzano ich na urządzeniu.
