@@ -59,4 +59,16 @@ class UsageAdvisorTest {
         assertNull(UsageAdvisor.matchProfile(UsageAdvisor.NYLON, profiles.take(2)))
         assertEquals(0, UsageAdvisor.matchProfile(UsageAdvisor.NYLON, listOf(Material.OTHER to "PA6")))
     }
+
+    @Test
+    fun enclosureAdvice() {
+        val indoor = UsageAdvisor.forEnclosure(false)
+        assertEquals(Material.PLA, indoor.primary.material)
+        assertEquals(UsageType.INDOOR_LIGHT, indoor.usage)
+        val outdoor = UsageAdvisor.forEnclosure(true)
+        assertEquals(Material.ASA, outdoor.primary.material)
+        assertTrue(outdoor.alternatives.any { it.material == Material.PETG })
+        assertTrue(outdoor.orientationTip.contains("Pokrywę"))
+        assertTrue(outdoor.warnings.any { it.contains("krytycznych dla bezpieczeństwa") })
+    }
 }

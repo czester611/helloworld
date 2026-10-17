@@ -58,4 +58,48 @@ object PartExporter {
         }
         return report
     }
+
+    // --- Zestawy kilku nazwanych brył (np. dno i pokrywa obudowy na jednym stole) ---
+
+    /** Siatki powłok każdej części, przesunięte wspólnie (minZ = 0, środek XY całego zestawu w (0,0)). */
+    fun preparedGroups(groups: List<NamedSolid>): List<Pair<String, List<Mesh>>> {
+        require(groups.isNotEmpty()) { "Pusty zestaw" }
+        val raw = groups.map { it.name to MeshBuilder.buildShells(it.solid) }
+        val all = raw.flatMap { it.second }.map { it.bounds() }
+        require(all.isNotEmpty()) { "Pusta bryła" }
+        val d = Vec3(
+            -(all.minOf { it.first.x } + all.maxOf { it.second.x }) / 2.0,
+            -(all.minOf { it.first.y } + all.maxOf { it.second.y }) / 2.0,
+            -all.minOf { it.first.z },
+        )
+        return raw.map { (n, shells) -> n to shells.map { it.translated(d) } }
+    }
+
+    /** Waliduje wszystkie części zestawu razem, bez zapisu. */
+    fun validateGroups(groups: List<NamedSolid>): MeshReport =
+        MeshValidator.check(preparedGroups(groups).flatMap { it.second }.fold(Mesh.EMPTY) { acc, m -> acc + m })
+
+    /** Wymiary całego zestawu (X, Y, Z w mm). */
+    fun dimensionsGroups(groups: List<NamedSolid>): Vec3 {
+        val all = preparedGroups(groups).flatMap { it.second }.map { it.bounds() }
+        return Vec3(
+            all.maxOf { it.second.x } - all.minOf { it.first.x },
+            all.maxOf { it.second.y } - all.minOf { it.first.y },
+            all.maxOf { it.second.z } - all.minOf { it.first.z },
+        )
+    }
+
+    /**
+     * Zapisuje zestaw jako jeden plik 3MF z osobnym obiektem na każdą część. Rzuca [IllegalStateException]
+     * (bez zapisu) przy błędnej siatce.
+     */
+    fun exportGroups3mf(groups: List<NamedSolid>, name: String, out: OutputStream): MeshReport {
+        val prepared = preparedGroups(groups)
+        val report = MeshValidator.check(prepared.flatMap { it.second }.fold(Mesh.EMPTY) { acc, m -> acc + m })
+        if (!report.isClosed || !report.isConsistentlyOriented || report.volumeMm3 <= 0.0) {
+            throw IllegalStateException(MESH_ERROR)
+        }
+        ThreeMfWriter.writeParts(prepared, name, out)
+        return report
+    }
 }

@@ -112,6 +112,19 @@ object UsageAdvisor {
         return UsageAdvice(usage, primary, alts, tip, listOf(SAFETY_WARNING, PRINTER_NOTE))
     }
 
+    /** Orientacja druku obudowy (dno i pokrywa). */
+    const val ENCLOSURE_ORIENTATION_TIP =
+        "Dno drukuj otworem do góry, bez podpór. Pokrywę połóż płaską, zewnętrzną stroną na stole, zakładką do góry — " +
+            "eksport już tak ją układa."
+
+    /**
+     * Zalecenie dla obudowy: wnętrze/mało obciążona (PLA, alternatywa PETG) albo na zewnątrz (ASA, alternatywa PETG).
+     */
+    fun forEnclosure(outdoor: Boolean): UsageAdvice {
+        val a = advise(if (outdoor) UsageType.OUTDOOR_UV else UsageType.INDOOR_LIGHT)
+        return a.copy(orientationTip = ENCLOSURE_ORIENTATION_TIP + " " + a.orientationTip)
+    }
+
     /**
      * Wybiera indeks profilu pasującego do opcji: po materiale, a dla [FilamentOption.nameHint] po nazwie.
      * Zwraca null, gdy żaden profil nie pasuje.

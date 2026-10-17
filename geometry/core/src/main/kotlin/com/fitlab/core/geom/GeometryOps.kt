@@ -105,6 +105,40 @@ object GeometryOps {
         return single(g)
     }
 
+    /** Jak [difference], ale wynik może składać się z kilku rozłącznych kształtów (lub być pusty). */
+    fun differenceAll(a: Shape2, cutters: List<Shape2>): List<Shape2> {
+        var g: Geometry = toJts(a)
+        if (cutters.isNotEmpty()) {
+            val cut = cutters.map { toJts(it) as Geometry }.reduce { x, y -> x.union(y) }
+            g = g.difference(cut)
+        }
+        return fromJtsMulti(g)
+    }
+
+    /** Jak [intersection], ale wynik może składać się z kilku kształtów (lub być pusty). */
+    fun intersectionAll(a: Shape2, b: Shape2): List<Shape2> = fromJtsMulti(toJts(a).intersection(toJts(b)))
+
+    /** Czy [a] w całości zawiera [b]. */
+    fun contains(a: Shape2, b: Shape2): Boolean = toJts(a).contains(toJts(b))
+
+    /** Czy kształty mają wspólny punkt (także styk). */
+    fun intersects(a: Shape2, b: Shape2): Boolean = toJts(a).intersects(toJts(b))
+
+    /** Najmniejsza odległość między kształtami w mm (0, gdy się stykają lub nakładają). */
+    fun distance(a: Shape2, b: Shape2): Double = toJts(a).distance(toJts(b))
+
+    /**
+     * Pierwszy punkt przecięcia odcinka [from]–[to] z kształtem, licząc od [from]; null, gdy odcinek nie przecina
+     * kształtu.
+     */
+    fun rayEntry(shape: Shape2, from: Vec2, to: Vec2): Vec2? {
+        val line = factory.createLineString(arrayOf(Coordinate(from.x, from.y), Coordinate(to.x, to.y)))
+        val inter = line.intersection(toJts(shape))
+        if (inter.isEmpty) return null
+        val c = inter.coordinates.minByOrNull { Vec2(it.x, it.y).distanceTo(from) } ?: return null
+        return Vec2(c.x, c.y)
+    }
+
     /** Część wspólna dwóch kształtów. */
     fun intersection(a: Shape2, b: Shape2): Shape2 = single(toJts(a).intersection(toJts(b)))
 
