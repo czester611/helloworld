@@ -24,19 +24,18 @@ data class ExportPlan(
     val context: BuildContext,
 )
 
-/** Wynik eksportu: plik w cache i zapisana próba. */
+/** Wynik eksportu: plik w cache; próba jest zapisywana dopiero przez [ExportService.commit]. */
 data class ExportOutcome(
     val file: File,
     val fileName: String,
-    val iterationId: Long,
     val number: Int,
     val format: ExportFormat,
     val report: MeshReport,
 )
 
-/** Eksport bryły do pliku i zapis próby (TestIteration) w bazie. */
+/** Eksport bryły do pliku; próbę (TestIteration) zapisuje [commit] po faktycznym zapisaniu/udostępnieniu. */
 class ExportService(private val c: AppContainer) {
-    /** Zapisuje plik w cache/exports i tworzy próbę; rzuca [IllegalStateException] przy błędzie siatki. */
+    /** Zapisuje plik w cache/exports (bez tworzenia próby); rzuca [IllegalStateException] przy błędzie siatki. */
     suspend fun export(plan: ExportPlan, format: ExportFormat): ExportOutcome = withContext(Dispatchers.IO) {
         val number = c.tests.nextNumber(plan.partId)
         val fileName = FileNames.exportName(plan.partName, plan.type, number, format)
@@ -48,20 +47,30 @@ class ExportService(private val c: AppContainer) {
             file.delete()
             throw e
         }
+        ExportOutcome(file, fileName, number, format, report)
+    }
+
+    /** Zapisuje próbę w bazie; wywołać dopiero po udanym zapisaniu lub udostępnieniu pliku. Zwraca ID próby. */
+    suspend fun commit(plan: ExportPlan, outcome: ExportOutcome): Long = withContext(Dispatchers.IO) {
         val ctx = plan.context
         val id = c.tests.createIteration(
             partId = plan.partId,
-            number = number,
+            number = outcome.number,
             type = plan.type,
             printerId = ctx.printer.id,
             filamentId = ctx.filament.id,
             designJson = plan.designJson,
             compensationJson = DesignJson.encodeCompensation(ctx.comp),
             featuresJson = DesignJson.encodeFeatures(plan.build.features),
-            format = format,
-            fileName = fileName,
+            format = outcome.format,
+            fileName = outcome.fileName,
         )
         plan.partId?.let { c.parts.markTestingIfDraft(it) }
-        ExportOutcome(file, fileName, id, number, format, report)
+        id
+    }
+
+    /** Usuwa plik z cache po anulowaniu lub błędzie zapisu; próba nie powstaje. */
+    fun discard(outcome: ExportOutcome) {
+        outcome.file.delete()
     }
 }

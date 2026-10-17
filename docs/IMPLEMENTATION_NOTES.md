@@ -18,7 +18,7 @@ Szczegółowe decyzje i odstępstwa: `docs/DECISIONS.md` (zgodnie z DESIGN.md). 
 - `ImageLoader` ma też wariant z `File` (`ImageDecoder.createSource(File)`), bo zdjęcia są najpierw kopiowane do cache.
 - NewPart i TemplatePicker nie mają ViewModeli (statyczne ekrany).
 - Pole „Bias” w Kompensacji używa zwykłej klawiatury (klawiatura dziesiętna nie zawsze ma minus).
-- Eksport: próba (TestIteration) zapisywana jest w momencie wygenerowania pliku (także przy późniejszym anulowaniu wyboru lokalizacji).
+- Eksport: próba (TestIteration) jest zapisywana dopiero po udanym zapisie pliku („Zapisz plik…”) lub uruchomieniu udostępniania (`ExportService.commit`); przy anulowaniu plik z cache jest usuwany i próba nie powstaje (numer nie jest zużyty). Android nie informuje, czy użytkownik faktycznie wysłał plik z okna udostępniania, więc tam moment zapisu to otwarcie okna. Poprzednio próba powstawała przy generowaniu pliku. Brak testu JUnit: zmiana dotyczy tylko warstwy app (Room/SAF), bez czystej logiki w geometry/core.
 
 ## Zalecenia filamentu i orientacji (zadanie A)
 - Logika w czystym Kotlinie: `geometry/core/.../advice/UsageAdvice.kt` (`UsageType`, `UsageAdvisor.advise`, `matchProfile`) z testami

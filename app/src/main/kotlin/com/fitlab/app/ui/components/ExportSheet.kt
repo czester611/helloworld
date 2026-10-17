@@ -84,13 +84,27 @@ fun ExportSheet(
     val saveLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         val outcome = pending
         pending = null
-        if (uri != null && outcome != null) {
-            scope.launch {
-                withContext(Dispatchers.IO) {
-                    context.contentResolver.openOutputStream(uri)?.use { out -> outcome.file.inputStream().use { it.copyTo(out) } }
+        val p = plan
+        if (outcome != null && p != null) {
+            if (uri == null) {
+                // Anulowano „Zapisz plik…”: nie zapisujemy próby.
+                service.discard(outcome)
+            } else {
+                scope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            val out = context.contentResolver.openOutputStream(uri)
+                                ?: throw IllegalStateException("Nie udało się otworzyć pliku docelowego")
+                            out.use { o -> outcome.file.inputStream().use { it.copyTo(o) } }
+                        }
+                        service.commit(p, outcome)
+                        onExported(outcome)
+                        onDismiss()
+                    } catch (e: Exception) {
+                        service.discard(outcome)
+                        error = e.message ?: "Błąd zapisu pliku"
+                    }
                 }
-                onExported(outcome)
-                onDismiss()
             }
         }
     }
@@ -108,6 +122,7 @@ fun ExportSheet(
                 } else {
                     val mime = format.mimeType
                     ShareHelper.share(context, outcome.file, mime, "Udostępnij model")
+                    service.commit(p, outcome)
                     onExported(outcome)
                     onDismiss()
                 }
