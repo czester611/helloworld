@@ -1,6 +1,7 @@
 package com.fitlab.app.ui.components
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,13 +63,14 @@ fun ExportSheet(
     var busy by remember { mutableStateOf(true) }
     var format by remember { mutableStateOf(ExportFormat.THREE_MF) }
     var pending by remember { mutableStateOf<ExportOutcome?>(null) }
+    var saveIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
         try {
             val p = withContext(Dispatchers.Default) { planProvider() }
             val i = withContext(Dispatchers.Default) {
-                val r = PartExporter.validate(p.build.solid)
-                val d = PartExporter.dimensions(p.build.solid)
+                val r = if (p.parts.isEmpty()) PartExporter.validate(p.build.solid) else PartExporter.validateGroups(p.parts)
+                val d = if (p.parts.isEmpty()) PartExporter.dimensions(p.build.solid) else PartExporter.dimensionsGroups(p.parts)
                 ExportInfo(r.triangleCount, d.x, d.y, d.z, r.isClosed && r.isConsistentlyOriented && r.volumeMm3 > 0)
             }
             plan = p
@@ -81,26 +83,37 @@ fun ExportSheet(
         }
     }
 
+    val launcherRef = remember { arrayOfNulls<ActivityResultLauncher<String>>(1) }
     val saveLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         val outcome = pending
-        pending = null
         val p = plan
         if (outcome != null && p != null) {
             if (uri == null) {
                 // Anulowano „Zapisz plik…”: nie zapisujemy próby.
+                pending = null
                 service.discard(outcome)
             } else {
                 scope.launch {
                     try {
+                        val files = outcome.allFiles
+                        val src = files[saveIndex].first
                         withContext(Dispatchers.IO) {
                             val out = context.contentResolver.openOutputStream(uri)
                                 ?: throw IllegalStateException("Nie udało się otworzyć pliku docelowego")
-                            out.use { o -> outcome.file.inputStream().use { it.copyTo(o) } }
+                            out.use { o -> src.inputStream().use { it.copyTo(o) } }
                         }
-                        service.commit(p, outcome)
-                        onExported(outcome)
-                        onDismiss()
+                        if (saveIndex + 1 < files.size) {
+                            // Kolejna część (np. pokrywa): osobne okno zapisu.
+                            saveIndex += 1
+                            launcherRef[0]?.launch(files[saveIndex].second)
+                        } else {
+                            pending = null
+                            service.commit(p, outcome)
+                            onExported(outcome)
+                            onDismiss()
+                        }
                     } catch (e: Exception) {
+                        pending = null
                         service.discard(outcome)
                         error = e.message ?: "Błąd zapisu pliku"
                     }
@@ -108,6 +121,8 @@ fun ExportSheet(
             }
         }
     }
+
+    launcherRef[0] = saveLauncher
 
     fun run(save: Boolean) {
         val p = plan ?: return
@@ -118,10 +133,11 @@ fun ExportSheet(
                 val outcome = service.export(p, format)
                 if (save) {
                     pending = outcome
+                    saveIndex = 0
                     saveLauncher.launch(outcome.fileName)
                 } else {
                     val mime = format.mimeType
-                    ShareHelper.share(context, outcome.file, mime, "Udostępnij model")
+                    ShareHelper.shareMany(context, outcome.allFiles.map { it.first }, mime, "Udostępnij model")
                     service.commit(p, outcome)
                     onExported(outcome)
                     onDismiss()

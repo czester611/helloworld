@@ -10,6 +10,9 @@ import com.fitlab.app.ui.components.label
 import com.fitlab.core.design.BuildResult
 import com.fitlab.core.design.DesignBuilder
 import com.fitlab.core.design.DesignJson
+import com.fitlab.core.design.EnclosureDesign
+import com.fitlab.core.enclosure.EnclosureBuilder
+import com.fitlab.core.enclosure.MachineLimits
 import com.fitlab.core.design.PartDesign
 import com.fitlab.core.export.IterationType
 import com.fitlab.core.fit.CompensationKind
@@ -133,6 +136,15 @@ class PartDetailViewModel(private val c: AppContainer, private val partId: Long)
         val part = requireNotNull(c.parts.get(partId)) { "Nie znaleziono części" }
         val ctx = c.buildContext()
         val design: PartDesign = DesignJson.decode(part.designJson)
+        if (design is EnclosureDesign) {
+            val machine = MachineLimits(nozzleMm = ctx.printer.nozzleDiameterMm)
+            val r = if (type == IterationType.FIT_TEST) {
+                EnclosureBuilder.buildFitTest(design.spec, ctx.comp, ctx.print, machine)
+            } else {
+                EnclosureBuilder.build(design.spec, ctx.comp, ctx.print, machine)
+            }
+            return@withContext ExportPlan(partId, part.name, type, part.designJson, r.toBuildResult(), ctx, r.parts)
+        }
         val build = if (type == IterationType.FIT_TEST) {
             DesignBuilder.buildFitTest(design, ctx.comp, ctx.print)
         } else {

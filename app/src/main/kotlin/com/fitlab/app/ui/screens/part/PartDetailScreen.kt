@@ -102,7 +102,9 @@ fun PartDetailScreen(
             )
             ShapeCanvas(state.shapes, Modifier.fillMaxWidth().height(200.dp), showDims = true)
             OutlinedButton(onClick = {
-                val route = if (part.source == PartRepository.SOURCE_PHOTO) {
+                val route = if (part.source == PartRepository.SOURCE_ENCLOSURE) {
+                    PartRoute.Enclosure(part.id)
+                } else if (part.source == PartRepository.SOURCE_PHOTO) {
                     PartRoute.Outline(part.id)
                 } else {
                     PartRoute.Template(part.templateId ?: "", part.id)
@@ -180,5 +182,6 @@ fun PartDetailScreen(
 /** Cel edycji części. */
 sealed interface PartRoute {
     data class Outline(val partId: Long) : PartRoute
+    data class Enclosure(val partId: Long) : PartRoute
     data class Template(val templateId: String, val partId: Long) : PartRoute
 }

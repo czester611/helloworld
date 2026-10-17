@@ -81,6 +81,14 @@ fun HomeContent(state: HomeUiState, onNavigate: (String) -> Unit) {
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
+            Card(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).clickable { onNavigate(Routes.ENCLOSURE_SOURCE) },
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text("Obudowa", style = MaterialTheme.typography.titleMedium)
+                    Text("Dobierz dno i pokrywę do płytki, modułu lub urządzenia.", style = MaterialTheme.typography.bodySmall)
+                }
+            }
             if (state.loaded && state.parts.isEmpty()) {
                 Column(
                     Modifier.fillMaxSize().padding(24.dp),

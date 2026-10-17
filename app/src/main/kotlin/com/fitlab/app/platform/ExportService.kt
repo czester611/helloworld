@@ -7,6 +7,7 @@ import com.fitlab.core.design.DesignJson
 import com.fitlab.core.export.ExportFormat
 import com.fitlab.core.export.FileNames
 import com.fitlab.core.export.IterationType
+import com.fitlab.core.export.NamedSolid
 import com.fitlab.core.export.PartExporter
 import com.fitlab.core.mesh.MeshReport
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,8 @@ data class ExportPlan(
     val designJson: String,
     val build: BuildResult,
     val context: BuildContext,
+    /** Części do osobnego eksportu (obudowa: dno i pokrywa); puste = jedna bryła z [build]. */
+    val parts: List<NamedSolid> = emptyList(),
 )
 
 /** Wynik eksportu: plik w cache; próba jest zapisywana dopiero przez [ExportService.commit]. */
@@ -31,13 +34,19 @@ data class ExportOutcome(
     val number: Int,
     val format: ExportFormat,
     val report: MeshReport,
-)
+    /** Dodatkowe pliki (STL kolejnych części): plik i nazwa. */
+    val extra: List<Pair<File, String>> = emptyList(),
+) {
+    /** Wszystkie pliki wyniku, główny pierwszy. */
+    val allFiles: List<Pair<File, String>> get() = listOf(file to fileName) + extra
+}
 
 /** Eksport bryły do pliku; próbę (TestIteration) zapisuje [commit] po faktycznym zapisaniu/udostępnieniu. */
 class ExportService(private val c: AppContainer) {
     /** Zapisuje plik w cache/exports (bez tworzenia próby); rzuca [IllegalStateException] przy błędzie siatki. */
     suspend fun export(plan: ExportPlan, format: ExportFormat): ExportOutcome = withContext(Dispatchers.IO) {
         val number = c.tests.nextNumber(plan.partId)
+        if (plan.parts.isNotEmpty()) return@withContext exportParts(plan, format, number)
         val fileName = FileNames.exportName(plan.partName, plan.type, number, format)
         val file = c.fileStore.exportFile(fileName)
         val report: MeshReport
@@ -48,6 +57,33 @@ class ExportService(private val c: AppContainer) {
             throw e
         }
         ExportOutcome(file, fileName, number, format, report)
+    }
+
+    /** Obudowa: 3MF z dwoma obiektami albo osobny STL dla każdej części (nazwy wg [FileNames]). */
+    private fun exportParts(plan: ExportPlan, format: ExportFormat, number: Int): ExportOutcome {
+        val created = ArrayList<File>()
+        try {
+            if (format == ExportFormat.THREE_MF) {
+                val name = FileNames.exportName(plan.partName, plan.type, number, format)
+                val file = c.fileStore.exportFile(name).also { created.add(it) }
+                val report = FileOutputStream(file).use { PartExporter.exportGroups3mf(plan.parts, plan.partName, it) }
+                return ExportOutcome(file, name, number, format, report)
+            }
+            val files = plan.parts.map { part ->
+                val name = FileNames.exportName("${plan.partName} ${part.name}", plan.type, number, format)
+                val file = c.fileStore.exportFile(name).also { created.add(it) }
+                val report = FileOutputStream(file).use { PartExporter.export(part.solid, format, part.name, it) }
+                Triple(file, name, report)
+            }
+            val first = files.first()
+            return ExportOutcome(
+                first.first, first.second, number, format, first.third,
+                files.drop(1).map { it.first to it.second },
+            )
+        } catch (e: Exception) {
+            created.forEach { it.delete() }
+            throw e
+        }
     }
 
     /** Zapisuje próbę w bazie; wywołać dopiero po udanym zapisaniu lub udostępnieniu pliku. Zwraca ID próby. */
@@ -71,6 +107,6 @@ class ExportService(private val c: AppContainer) {
 
     /** Usuwa plik z cache po anulowaniu lub błędzie zapisu; próba nie powstaje. */
     fun discard(outcome: ExportOutcome) {
-        outcome.file.delete()
+        outcome.allFiles.forEach { it.first.delete() }
     }
 }

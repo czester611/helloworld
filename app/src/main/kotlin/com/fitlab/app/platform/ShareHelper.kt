@@ -23,4 +23,16 @@ object ShareHelper {
         val chooser = Intent.createChooser(intent, title).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
         context.startActivity(chooser)
     }
+
+    /** Udostępnia kilka plików naraz (np. dno i pokrywę obudowy jako STL). */
+    fun shareMany(context: Context, files: List<File>, mime: String, title: String = "Udostępnij") {
+        if (files.size == 1) return share(context, files[0], mime, title)
+        val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = mime
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(files.map { uriFor(context, it) }))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val chooser = Intent.createChooser(intent, title).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+        context.startActivity(chooser)
+    }
 }

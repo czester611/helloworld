@@ -13,6 +13,9 @@ import com.fitlab.app.ui.screens.compensation.CompensationScreen
 import com.fitlab.app.ui.screens.compensation.CompensationViewModel
 import com.fitlab.app.ui.screens.home.HomeScreen
 import com.fitlab.app.ui.screens.home.HomeViewModel
+import com.fitlab.app.ui.screens.enclosure.EnclosureScreen
+import com.fitlab.app.ui.screens.enclosure.EnclosureSourceScreen
+import com.fitlab.app.ui.screens.enclosure.EnclosureViewModel
 import com.fitlab.app.ui.screens.newpart.NewPartScreen
 import com.fitlab.app.ui.screens.profiles.ProfilesScreen
 import com.fitlab.app.ui.screens.diagnostics.DiagnosticsScreen
@@ -46,7 +49,7 @@ fun FitLabNavHost() {
         composable(Routes.NEW) {
             NewPartScreen(
                 onBack = back,
-                onPhoto = { nav.navigate(Routes.PHOTO) },
+                onPhoto = { nav.navigate(Routes.photo()) },
                 onTemplates = { nav.navigate(Routes.TEMPLATES) },
                 onMarkers = { nav.navigate(Routes.MARKERS) },
             )
@@ -84,6 +87,7 @@ fun FitLabNavHost() {
                 onEdit = { target ->
                     when (target) {
                         is PartRoute.Outline -> nav.navigate(Routes.outline(target.partId))
+                        is PartRoute.Enclosure -> nav.navigate(Routes.enclosure(target.partId))
                         is PartRoute.Template ->
                             nav.navigate(Routes.templateEditor(TemplateId.valueOf(target.templateId), target.partId))
                     }
@@ -100,24 +104,57 @@ fun FitLabNavHost() {
         }
         composable(Routes.CALIBRATION) { CalibrationScreen(appViewModel { CalibrationViewModel(it) }, back) }
         composable(Routes.MARKERS) { MarkerSheetScreen(appViewModel { MarkerSheetViewModel(it) }, back) }
-        composable(Routes.PHOTO) {
+        composable(
+            Routes.PHOTO,
+            arguments = listOf(navArgument("enclosure") { type = NavType.BoolType; defaultValue = false }),
+        ) { entry ->
+            val enclosure = entry.arguments?.getBoolean("enclosure") ?: false
             PhotoCaptureScreen(
                 viewModel = appViewModel { PhotoCaptureViewModel(it) },
                 onBack = back,
                 onCreated = { id ->
-                    nav.navigate(Routes.outline(id)) { popUpTo(Routes.PHOTO) { inclusive = true } }
+                    nav.navigate(Routes.outline(id, enclosure)) { popUpTo(Routes.PHOTO) { inclusive = true } }
                 },
+            )
+        }
+        composable(Routes.ENCLOSURE_SOURCE) {
+            EnclosureSourceScreen(
+                onBack = back,
+                onPhoto = { nav.navigate(Routes.photo(enclosure = true)) },
+                onDimensions = { nav.navigate(Routes.enclosure()) },
+                onMarkers = { nav.navigate(Routes.MARKERS) },
+            )
+        }
+        composable(
+            Routes.ENCLOSURE,
+            arguments = listOf(navArgument("partId") { type = NavType.LongType }),
+        ) { entry ->
+            val partId = entry.arguments?.getLong("partId") ?: -1L
+            EnclosureScreen(
+                viewModel = appViewModel { EnclosureViewModel(it, partId) },
+                onBack = back,
+                onDone = { id -> nav.navigate(Routes.part(id)) { popUpTo(Routes.HOME) } },
             )
         }
         composable(
             Routes.OUTLINE,
-            arguments = listOf(navArgument("partId") { type = NavType.LongType }),
+            arguments = listOf(
+                navArgument("partId") { type = NavType.LongType },
+                navArgument("enclosure") { type = NavType.BoolType; defaultValue = false },
+            ),
         ) { entry ->
             val partId = entry.arguments?.getLong("partId") ?: -1L
+            val enclosure = entry.arguments?.getBoolean("enclosure") ?: false
             OutlineEditorScreen(
                 viewModel = appViewModel { OutlineEditorViewModel(it, partId) },
                 onBack = back,
-                onSaved = { id -> nav.navigate(Routes.part(id)) { popUpTo(Routes.HOME) } },
+                onSaved = { id ->
+                    if (enclosure) {
+                        nav.navigate(Routes.enclosure(id)) { popUpTo(Routes.HOME) }
+                    } else {
+                        nav.navigate(Routes.part(id)) { popUpTo(Routes.HOME) }
+                    }
+                },
             )
         }
         composable(Routes.DIAGNOSTICS) { DiagnosticsScreen(appViewModel { DiagnosticsViewModel(it) }, back) }

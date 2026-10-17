@@ -58,6 +58,17 @@ class PartRepository(private val db: FitLabDatabase, private val files: FileStor
         parts.update(p.copy(designJson = DesignJson.encode(design), updatedAt = System.currentTimeMillis()))
     }
 
+    /** Zamienia część (np. obrys ze zdjęcia) w obudowę: nowy projekt, nazwa i źródło ENCLOSURE; zdjęcie zostaje. */
+    suspend fun convertToEnclosure(id: Long, name: String, design: PartDesign) {
+        val p = parts.get(id) ?: return
+        parts.update(
+            p.copy(
+                name = name, source = SOURCE_ENCLOSURE, designJson = DesignJson.encode(design),
+                updatedAt = System.currentTimeMillis(),
+            ),
+        )
+    }
+
     suspend fun rename(id: Long, name: String) {
         val p = parts.get(id) ?: return
         parts.update(p.copy(name = name, updatedAt = System.currentTimeMillis()))
@@ -91,5 +102,6 @@ class PartRepository(private val db: FitLabDatabase, private val files: FileStor
         const val STATUS_DONE = "DONE"
         const val SOURCE_PHOTO = "PHOTO"
         const val SOURCE_TEMPLATE = "TEMPLATE"
+        const val SOURCE_ENCLOSURE = "ENCLOSURE"
     }
 }
